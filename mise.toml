@@ -1,0 +1,3 @@
+[tools]
+# textlint v15 は Node.js 20+ が必須。グローバル node が変わっても動くよう固定する。
+node = "24"

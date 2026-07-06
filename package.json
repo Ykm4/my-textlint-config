@@ -1,0 +1,35 @@
+{
+  "name": "my-textlint-config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "個人用の日本語 textlint 共有設定。決定的な校正の共通基盤(~/.claude/rules/markdown.md の機械化分)。各プロジェクトはこれを require して prh 辞書を重ねて拡張する。",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "dict"
+  ],
+  "keywords": [
+    "textlint",
+    "textlintconfig",
+    "japanese",
+    "proofreading"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "lint": "textlint --config ./index.js"
+  },
+  "dependencies": {
+    "textlint-rule-preset-ai-writing": "^1.1.0",
+    "textlint-rule-preset-ja-technical-writing": "^12.0.2",
+    "textlint-rule-preset-ja-spacing": "^3.0.2",
+    "textlint-rule-ja-hiragana-keishikimeishi": "^1.1.0",
+    "textlint-rule-no-mix-dearu-desumasu": "^6.0.4",
+    "textlint-rule-prh": "^6.1.0"
+  },
+  "peerDependencies": {
+    "textlint": ">=15"
+  },
+  "devDependencies": {
+    "textlint": "^15.7.1"
+  }
+}

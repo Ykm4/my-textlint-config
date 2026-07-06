@@ -1,0 +1,28 @@
+version: 1
+
+# 日本語校正の表記統一辞書(prh)。textlint-rule-prh から読み込む。
+# 自動修正(--fix)に対応する。ユーザーの記法規約(~/.claude/rules/markdown.md)を機械化する。
+# 各プロジェクトは、この共通辞書に業界固有の辞書(industry-*.yml)を重ねて拡張する。
+
+rules:
+  # 囲み数字は環境(フォント・ターミナル)依存で視認性が落ちるため半角ブラケットに統一する
+  - expected: "[1]"
+    pattern: "①"
+  - expected: "[2]"
+    pattern: "②"
+  - expected: "[3]"
+    pattern: "③"
+  - expected: "[4]"
+    pattern: "④"
+  - expected: "[5]"
+    pattern: "⑤"
+  - expected: "[6]"
+    pattern: "⑥"
+  - expected: "[7]"
+    pattern: "⑦"
+  - expected: "[8]"
+    pattern: "⑧"
+  - expected: "[9]"
+    pattern: "⑨"
+  - expected: "[10]"
+    pattern: "⑩"
