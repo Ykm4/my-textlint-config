@@ -1,3 +1,9 @@
 [tools]
 # textlint v15 は Node.js 20+ が必須。グローバル node が変わっても動くよう固定する。
 node = "24"
+
+[tasks.release]
+description = "Release a new version (usage: mise run release <major|minor|patch>)"
+# 引数(major/minor/patch)は末尾に自動で渡される。実体は npm version のライフサイクル:
+# preversion(npm test) → バージョン更新+コミット+タグ → postversion(push + GitHub Release 作成)
+run = "npm version"

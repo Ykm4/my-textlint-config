@@ -117,3 +117,17 @@ npm test
 ```
 
 `test/fixtures/ok`(指摘なし・exit 0)と`test/fixtures/ng`(指摘あり・exit 1)を検証する。ルールの更新で検出範囲が変わると落ちて気づける。
+
+## リリース
+
+```bash
+mise run release minor   # major / minor / patch を指定
+```
+
+実体は`npm version`のライフサイクルで、次を一括で行う。
+
+- preversion: `npm test`(失敗したら中断)
+- バージョン更新・コミット・タグ作成(`v<version>`)
+- postversion: `git push --follow-tags`とGitHub Releaseの作成(ノートは自動生成)
+
+前提はクリーンな作業ツリー・mainブランチ・`gh`の認証済み。自動生成のリリースノートは、必要に応じて`gh release edit`で追記する。

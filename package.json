@@ -17,7 +17,9 @@
   ],
   "scripts": {
     "test": "node --test",
-    "lint": "textlint --config ./index.js"
+    "lint": "textlint --config ./index.js",
+    "preversion": "npm test",
+    "postversion": "git push origin main --follow-tags && gh release create \"v$npm_new_version\" --title \"v$npm_new_version\" --generate-notes"
   },
   "dependencies": {
     "textlint-filter-rule-allowlist": "^4.0.0",
