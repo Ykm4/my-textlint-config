@@ -20,12 +20,14 @@ function lint(file) {
   return { code: r.status, out: (r.stdout || "") + (r.stderr || "") };
 }
 
+// fixtures ディレクトリは lint 対象ファイル専用。拡張子を列挙せず実ファイルを拾う
+// (形式を増やしても同期不要。隠しファイル・ディレクトリだけ弾く)。
 function fixtures(kind) {
   const dir = path.join(__dirname, "fixtures", kind);
   return fs
-    .readdirSync(dir)
-    .filter((f) => f.endsWith(".md"))
-    .map((f) => path.join(dir, f));
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((d) => d.isFile() && !d.name.startsWith("."))
+    .map((d) => path.join(dir, d.name));
 }
 
 for (const file of fixtures("ok")) {

@@ -1,7 +1,7 @@
 version: 1
 
 # 日本語校正の表記統一辞書(prh)。textlint-rule-prh から読み込む。
-# 自動修正(--fix)に対応する。ユーザーの記法規約(~/.claude/rules/markdown.md)を機械化する。
+# 自動修正(--fix)に対応する。個人の記法規約を機械化する。
 # 各プロジェクトは、この共通辞書に業界固有の辞書(industry-*.yml)を重ねて拡張する。
 
 rules:
@@ -26,3 +26,10 @@ rules:
     pattern: "⑨"
   - expected: "[10]"
     pattern: "⑩"
+
+  # 句読点は「、」「。」に統一する(全角カンマ・全角ピリオドを使わない)。
+  # 学術系など意図して「，．」を使う文書は allowlist で除外する
+  - expected: "、"
+    pattern: "，"
+  - expected: "。"
+    pattern: "．"

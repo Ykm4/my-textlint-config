@@ -1,0 +1,97 @@
+version: 1
+
+# 外字・機種依存文字の正規化辞書(prh)。textlint-rule-prh から読み込む。
+# 自動修正(--fix)に対応する。dict/prh.yml(記法規約の機械化)とは関心を分離し、
+# こちらは「文字クラスの正規化」を担う。原則 NFKC の変換表に準拠し、
+# ポリシーとして NFKC から外れる項目はコメントで明示する。
+# 意図して特殊文字を使う文書は allowlist(dict/allow.yml)で除外する。
+
+rules:
+  # --- 全角数字 → 半角数字(NFKC 準拠) ---
+  - expected: "0"
+    pattern: "０"
+  - expected: "1"
+    pattern: "１"
+  - expected: "2"
+    pattern: "２"
+  - expected: "3"
+    pattern: "３"
+  - expected: "4"
+    pattern: "４"
+  - expected: "5"
+    pattern: "５"
+  - expected: "6"
+    pattern: "６"
+  - expected: "7"
+    pattern: "７"
+  - expected: "8"
+    pattern: "８"
+  - expected: "9"
+    pattern: "９"
+
+  # --- 機種依存の組文字・記号(NFKC 準拠。№のみ「No.」をポリシー採用) ---
+  - expected: "(株)"
+    pattern: "㈱"
+  - expected: "株式会社"
+    pattern: "㍿"
+  - expected: "TEL"
+    pattern: "℡"
+  # NFKC は「No」だが、日本語文書では「No.1」の形が自然なためピリオドを付ける
+  - expected: "No."
+    pattern: "№"
+
+  # --- 単位の組文字(NFKC 準拠) ---
+  # ㎡・㎥ は NFKC だと m2・m3 になり上付きの意味が失われるため、辞書に含めない
+  - expected: "mm"
+    pattern: "㎜"
+  - expected: "cm"
+    pattern: "㎝"
+  - expected: "km"
+    pattern: "㎞"
+  - expected: "kg"
+    pattern: "㎏"
+  - expected: "ml"
+    pattern: "㎖"
+
+  # --- ローマ数字 → 算用数字(ポリシー採用。NFKC は I/II/III… の欧字に変換する) ---
+  # 日本語技術文書・医療表記(例: 2型糖尿病)では算用数字が標準のため数字へ寄せる
+  - expected: "1"
+    pattern: "Ⅰ"
+  - expected: "2"
+    pattern: "Ⅱ"
+  - expected: "3"
+    pattern: "Ⅲ"
+  - expected: "4"
+    pattern: "Ⅳ"
+  - expected: "5"
+    pattern: "Ⅴ"
+  - expected: "6"
+    pattern: "Ⅵ"
+  - expected: "7"
+    pattern: "Ⅶ"
+  - expected: "8"
+    pattern: "Ⅷ"
+  - expected: "9"
+    pattern: "Ⅸ"
+  - expected: "10"
+    pattern: "Ⅹ"
+  - expected: "1"
+    pattern: "ⅰ"
+  - expected: "2"
+    pattern: "ⅱ"
+  - expected: "3"
+    pattern: "ⅲ"
+  - expected: "4"
+    pattern: "ⅳ"
+  - expected: "5"
+    pattern: "ⅴ"
+  - expected: "6"
+    pattern: "ⅵ"
+  - expected: "7"
+    pattern: "ⅶ"
+  - expected: "8"
+    pattern: "ⅷ"
+  - expected: "9"
+    pattern: "ⅸ"
+  - expected: "10"
+    pattern: "ⅹ"
