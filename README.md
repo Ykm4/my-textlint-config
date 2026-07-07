@@ -93,7 +93,6 @@ npx textlint 'docs/**/*.md'
 | `preset-ja-spacing` | 有効 | 半角/全角スペース・約物前後の統一(fix対応) |
 | `preset-ja-technical-writing` | 一部有効 | 一文の長さの上限を120に変更し、一部ルールを無効化(理由と計測結果は`lib/rules.js`のコメントを参照)。他の項目は既定値のまま有効 |
 | `ja-hiragana-keishikimeishi` | 有効 | 形式名詞のひらがな化(fix対応) |
-| `no-mix-dearu-desumasu` | 有効 | 敬体(です・ます)と常体(である)のコピュラ混在検出 |
 | `prefer-tari-tari` | 有効 | 「〜たり」並列で後半の「たり」欠落を検出 |
 | `no-kangxi-radicals` | 有効 | 康熙部首の混入検出(fix対応)。PDF由来の見た目同一・別コードポイント文字を正す |
 | `prh` | オプション | `dict/prh.yml`(記法規約)と`dict/prh-gaiji.yml`(外字・機種依存文字)の表記統一辞書(fix対応)。各プロジェクトは`rulePaths`に業界辞書を追加して重ねられる |
