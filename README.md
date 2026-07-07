@@ -5,6 +5,8 @@
 
 ## 使い方
 
+リリースはsemverのgitタグで管理する。`#semver:^1`で導入するとminor/patchの更新に追従し、破壊的変更(major)は明示的な上げ替えになる。
+
 ### グローバルで使う
 
 任意のディレクトリの対応ファイル(フォーマットは後述)を、共通設定でlint/fixする。ここでの「グローバル」は、gitやmiseの用法と同じくユーザー単位(ホームディレクトリ配下へのインストール)を指す。
@@ -18,7 +20,7 @@
 ```bash
 # セットアップ
 mkdir -p ~/.config/textlint && cd ~/.config/textlint
-npm i textlint github:Ykm4/my-textlint-config#main
+npm i textlint "github:Ykm4/my-textlint-config#semver:^1"
 ```
 
 ```bash
@@ -43,7 +45,7 @@ cd ~/.config/textlint && npm update my-textlint-config
 #### 使用例
 
 ```bash
-npm i -D github:Ykm4/my-textlint-config#main
+npm i -D "github:Ykm4/my-textlint-config#semver:^1"
 ```
 
 ```js
