@@ -1,1 +1,4 @@
 node_modules/
+.superpowers/
+# 設計メモ(個人環境の記述を含むためローカル管理)
+docs/superpowers/

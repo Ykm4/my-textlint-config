@@ -1,35 +1,49 @@
 # my-textlint-config
 
-個人用の日本語 textlint 共有設定(config 型)。AIエージェント(Claude Code)が生成する日本語を、決定的なルールで機械的に整える共通基盤。文脈判断が要る「自然さ・文体・構成」の推敲は別の仕組み(`~/.claude/skills/ja-proofread`)が担う(分業)。
-
-- リポジトリ本体は `~/other/my-textlint-config`。`~/.config/textlint` はそこへの symlink で、方式A のラッパーや mise はこの symlink 経由で参照する(将来 dotfiles が symlink を管理し、リポジトリ本体は別管理にできる)
-- 設定の単一の真実は `index.js`。`.textlintrc.js` はそれを再 export するだけ
-- 各プロジェクトはこれを require して業界固有の辞書を重ねて拡張する
+個人用の日本語textlint共有設定。
+文章を決定的なルールで機械的に整える共通基盤。設定の単一の真実は`index.js`(`lib/`の宣言を合成する)。
 
 ## 使い方
 
-### 方式A: PC全体の校正(ラッパー)
+### グローバルで使う
 
-任意のディレクトリの Markdown を、この配下の共通設定で lint / fix する。
+任意のディレクトリの対応ファイル(フォーマットは後述)を、共通設定でlint/fixする。ここでの「グローバル」は、gitやmiseの用法と同じくユーザー単位(ホームディレクトリ配下へのインストール)を指す。
+
+消費側ディレクトリ(置き場所は任意)にtextlint本体とこのパッケージをインストールする。呼び出すときは、インストール先の`index.js`を`--config`に、`node_modules`を`--rules-base-directory`に指定する。
+
+#### 使用例
+
+消費側ディレクトリを`~/.config/textlint`とした場合。
 
 ```bash
-~/.config/textlint/textlint.sh path/to/file.md          # 検査(指摘のみ)
-~/.config/textlint/textlint.sh --fix path/to/file.md     # 自動修正
-~/.config/textlint/textlint.sh --format json file.md     # JSON出力
+# セットアップ
+mkdir -p ~/.config/textlint && cd ~/.config/textlint
+npm i textlint github:Ykm4/my-textlint-config#main
 ```
 
-エイリアスを張ると便利。
-
 ```bash
-alias ja-lint='~/.config/textlint/textlint.sh'
+# 実行(タスクランナーやエイリアスにまとめると便利)
+~/.config/textlint/node_modules/.bin/textlint \
+  --config ~/.config/textlint/node_modules/my-textlint-config/index.js \
+  --rules-base-directory ~/.config/textlint/node_modules \
+  path/to/file.md
 ```
 
-### 方式B: プロジェクト個別(共通基盤＋業界特化)
+```bash
+# 更新
+cd ~/.config/textlint && npm update my-textlint-config
+```
 
-各プロジェクトはこの基盤を git 依存で入れ、`.textlintrc.js` で require して業界辞書を重ねる。
+自動修正は`--fix`、機械連携向けのJSON出力は`--format json`を付ける。
+
+### プロジェクトで使う
+
+各プロジェクトはこの基盤をgit依存で入れ、`.textlintrc.js`でrequireして業界辞書を重ねる。
+
+#### 使用例
 
 ```bash
-npm i -D github:Ykm4/my-textlint-config#v1.0.0
+npm i -D github:Ykm4/my-textlint-config#main
 ```
 
 ```js
@@ -49,32 +63,51 @@ module.exports = {
 ```
 
 ```bash
-npx textlint --config my-textlint-config 'docs/**/*.md'
+npx textlint 'docs/**/*.md'
 ```
 
-## 重要: `--config` には `index.js` を渡す
+## 重要: `--config`には`index.js`を渡す
 
-`--config .textlintrc.js` を指定すると textlint が「No rules found」になる(rc-config-loader の癖)。`--config` には `index.js`(またはパッケージ名 `my-textlint-config`)を渡すこと。`.textlintrc.js` はエディタの自動検出用に残している。
+`--config .textlintrc.js`を指定するとtextlintが「No rules found」になる(rc-config-loaderの癖)。`--config`には`index.js`(またはパッケージ名`my-textlint-config`)を渡すこと。`.textlintrc.js`はエディタの自動検出用に残している。
 
 ## 構成
 
-- `index.js` — 共有設定の本体。単一の真実
-- `.textlintrc.js` — `index.js` を再 export(エディタ自動検出用)
-- `dict/prh.yml` — 表記統一辞書(囲み数字→[n] 等・fix 対応)
-- `textlint.sh` — 方式A のラッパー(`--config index.js` ＋ `--rules-base-directory`)
-- `mise.toml` — Node を固定(textlint v15 は Node 20+ が必須)
-- `test/` — golden fixture テスト(`ok` が通り `ng` が落ちる)
-- `.github/workflows/ci.yml` — Node 20/22/24 で `npm ci` → `npm test`
-- `renovate.json` — `textlint-*` をグループ化し patch/minor を自動追随
+- `index.js` — 共有設定の入口(単一の真実)。`lib/`の宣言を合成する
+- `lib/*.js` — plugins・filters・rulesの宣言の実体
+- `.textlintrc.js` — `index.js`を再export(エディタ自動検出用)
+- `dict/prh.yml` — 記法規約の表記統一辞書(囲み数字→[n]等・fix対応)
+- `dict/prh-gaiji.yml` — 外字・機種依存文字の正規化辞書(全角数字・組文字・ローマ数字等・fix対応)
+- `dict/allow.yml` — 誤検知抑制の許可辞書(既定は空)
+- `mise.toml` — Nodeを固定(textlint v15はNode 20+ が必須)
+- `test/` — golden fixtureテスト(`ok`が通り`ng`だと落ちる)
+- `.github/workflows/ci.yml` — Node 20/22/24で`npm ci` → `npm test`
+- `renovate.json` — `textlint-*`をグループ化し、CIが通ることを条件にpatch/minorへ自動追随
 
 ## 有効化しているルール
 
-- `preset-ai-writing` — AI特有の不自然表現(過剰な太字・冗長なヘッジ・箇条書きの不統一)
-- `preset-ja-spacing` — 半角/全角スペース・約物前後の統一(fix 対応)
-- `preset-ja-technical-writing` — 技術文書の基本(一文の長さ 120・読点数・二重否定 等)
-- `ja-hiragana-keishikimeishi` — 形式名詞のひらがな化(fix 対応)
-- `no-mix-dearu-desumasu` — 敬体(です・ます)と常体(である)のコピュラ混在検出
-- `prh` — `dict/prh.yml` の表記統一辞書(fix 対応)
+状態: 有効=既定のまま/一部有効=一部の項目を上書き/オプション=プロジェクト側の拡張前提。
+
+| ルール | 状態 | 説明 |
+| --- | --- | --- |
+| `preset-ai-writing` | 有効 | AI特有の不自然表現(過剰な太字・冗長なヘッジ・箇条書きの不統一)を検出する |
+| `preset-ja-spacing` | 有効 | 半角/全角スペース・約物前後の統一(fix対応) |
+| `preset-ja-technical-writing` | 一部有効 | 一文の長さの上限を120に変更し、一部ルールを無効化(理由と計測結果は`lib/rules.js`のコメントを参照)。他の項目は既定値のまま有効 |
+| `ja-hiragana-keishikimeishi` | 有効 | 形式名詞のひらがな化(fix対応) |
+| `no-mix-dearu-desumasu` | 有効 | 敬体(です・ます)と常体(である)のコピュラ混在検出 |
+| `prefer-tari-tari` | 有効 | 「〜たり」並列で後半の「たり」欠落を検出 |
+| `no-kangxi-radicals` | 有効 | 康熙部首の混入検出(fix対応)。PDF由来の見た目同一・別コードポイント文字を正す |
+| `prh` | オプション | `dict/prh.yml`(記法規約)と`dict/prh-gaiji.yml`(外字・機種依存文字)の表記統一辞書(fix対応)。各プロジェクトは`rulePaths`に業界辞書を追加して重ねられる |
+
+## フィルタ
+
+- `node-types` — コードブロック・インラインコード・リンクを検査対象から除外する(経緯と実効性は`lib/filters.js`のコメントを参照)。
+- `allowlist` — 既定辞書`dict/allow.yml`で誤検知を抑制する。各プロジェクトは`allowlistConfigPaths`に自分の許可辞書を追加して重ねられる。
+
+## 対応フォーマットとプラグイン
+
+- Markdown・プレーンテキストはtextlint標準同梱のためプラグインは不要
+- HTML・LaTeX・MDXはこの基盤に同梱する(`textlint-plugin-html`/`textlint-plugin-latex2e`/`textlint-plugin-mdx`)。
+- AsciiDocとソースコード内コメントはこの基盤に含めない(必要なプロジェクトが個別に取り込む)。
 
 ## テスト
 
@@ -82,15 +115,4 @@ npx textlint --config my-textlint-config 'docs/**/*.md'
 npm test
 ```
 
-`test/fixtures/ok` は指摘なし(exit 0)、`test/fixtures/ng` は指摘あり(exit 1)を検証する。ルールの更新で検出範囲が変わると落ちて気づける。
-
-## 更新
-
-ローカルは mise の一括更新に載せる(`~/.config/mise/config.toml` の `tools:update` に `textlint:update` を追加)。
-
-```bash
-npm --prefix ~/.config/textlint update   # 単発更新
-mise r tools:update                       # 一括更新に含める場合
-```
-
-リポジトリ側は Renovate が `textlint-*` の patch/minor を CI green を条件に追随する。
+`test/fixtures/ok`(指摘なし・exit 0)と`test/fixtures/ng`(指摘あり・exit 1)を検証する。ルールの更新で検出範囲が変わると落ちて気づける。
